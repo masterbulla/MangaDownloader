@@ -1,0 +1,16 @@
+E:\SVN\MangaDownloader\MangaDownloader\bin\Debug\MangaDownloader.exe.config
+E:\SVN\MangaDownloader\MangaDownloader\bin\Debug\MangaDownloader.exe
+E:\SVN\MangaDownloader\MangaDownloader\bin\Debug\MangaDownloader.pdb
+E:\SVN\MangaDownloader\MangaDownloader\bin\Debug\HtmlAgilityPack.dll
+E:\SVN\MangaDownloader\MangaDownloader\bin\Debug\Newtonsoft.Json.dll
+E:\SVN\MangaDownloader\MangaDownloader\bin\Debug\HtmlAgilityPack.pdb
+E:\SVN\MangaDownloader\MangaDownloader\bin\Debug\HtmlAgilityPack.xml
+E:\SVN\MangaDownloader\MangaDownloader\bin\Debug\Newtonsoft.Json.xml
+E:\SVN\MangaDownloader\MangaDownloader\obj\Debug\MangaDownloader.FrmConfig.resources
+E:\SVN\MangaDownloader\MangaDownloader\obj\Debug\MangaDownloader.FrmDownload.resources
+E:\SVN\MangaDownloader\MangaDownloader\obj\Debug\MangaDownloader.FrmSelectDownload.resources
+E:\SVN\MangaDownloader\MangaDownloader\obj\Debug\MangaDownloader.Properties.Resources.resources
+E:\SVN\MangaDownloader\MangaDownloader\obj\Debug\MangaDownloader.csproj.GenerateResource.Cache
+E:\SVN\MangaDownloader\MangaDownloader\obj\Debug\MangaDownloader.exe
+E:\SVN\MangaDownloader\MangaDownloader\obj\Debug\MangaDownloader.pdb
+E:\SVN\MangaDownloader\MangaDownloader\obj\Debug\MangaDownloader.csprojResolveAssemblyReference.cache
