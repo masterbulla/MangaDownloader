@@ -50,7 +50,7 @@ namespace MangaDownloader.Controller
                             HtmlNode chapterNode = node.ChildNodes.Where(x => x.Name == "td").FirstOrDefault().ChildNodes["a"];
                             Chapter chapter = new Chapter(manga, new VnSharingDownloader());
                             chapter.Name = chapterNode.InnerText.Trim();
-                            chapter.URL = this.rootURL += chapterNode.Attributes["href"].Value;
+                            chapter.URL = this.rootURL + chapterNode.Attributes["href"].Value;
 
                             chapters.Insert(0, chapter);
                         }

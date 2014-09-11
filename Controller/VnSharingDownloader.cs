@@ -3,6 +3,7 @@ using System.Collections.Generic;
 using System.Linq;
 using System.Text;
 using System.Threading.Tasks;
+using System.Windows.Forms;
 using MangaDownloader.Controller.Interface;
 using System.ComponentModel;
 using MangaDownloader.Model;
@@ -13,10 +14,15 @@ using HtmlAgilityPack;
 using System.Threading;
 using System.Drawing;
 
+using HtmlDocument = HtmlAgilityPack.HtmlDocument;
+using System.Reflection;
+
 namespace MangaDownloader.Controller
 {
-    public class VnSharingDownloader : IDownloader 
+    public class VnSharingDownloader : IDownloader
     {
+        #region Fields
+
         /// <summary>
         /// manual reset event
         /// use to implement pause and resume functionality
@@ -34,6 +40,20 @@ namespace MangaDownloader.Controller
         private Chapter Chapter;
 
         /// <summary>
+        /// webbrowser control, used to achieve list of images url
+        /// </summary>
+        private WebBrowser browser;
+
+        /// <summary>
+        /// array of images url
+        /// </summary>
+        private string[] imagesURL;
+
+        #endregion
+
+        #region EventHandler
+
+        /// <summary>
         /// progress changed event
         /// notify when download progress changed
         /// </summary>
@@ -44,6 +64,10 @@ namespace MangaDownloader.Controller
         /// notify when download completed
         /// </summary>
         public event System.ComponentModel.RunWorkerCompletedEventHandler Completed;
+
+        #endregion 
+
+        #region Constructor
 
         /// <summary>
         /// constructor
@@ -60,6 +84,11 @@ namespace MangaDownloader.Controller
                 this.worker.ProgressChanged += worker_ProgressChanged;
                 this.worker.RunWorkerCompleted += worker_RunWorkerCompleted;
 
+                this.browser = new WebBrowser();
+                this.browser.ScriptErrorsSuppressed = true;
+
+                this.browser.DocumentCompleted += browser_DocumentCompleted;
+
                 this._resetEvent = new ManualResetEvent(false);
             }
             catch (Exception)
@@ -67,6 +96,46 @@ namespace MangaDownloader.Controller
                 throw;
             }
         }
+
+        #endregion
+
+        #region WebBrowser Event
+        
+        /// <summary>
+        /// hadle when web browser loaded completely
+        /// </summary>
+        /// <param name="sender"></param>
+        /// <param name="e"></param>
+        void browser_DocumentCompleted(object sender, WebBrowserDocumentCompletedEventArgs e)
+        {
+            try
+            {
+                if (e.Url.Equals(this.Chapter.URL))
+                {
+                    var result = this.browser.Document.InvokeScript("eval", new string[] { "lstImages" });
+                    int length = (int)result.GetType().InvokeMember("length", BindingFlags.GetProperty, null, result, null);
+
+                    this.imagesURL = new string[length];
+
+                    for (int i = 0; i < length; i++)
+                    {
+                        imagesURL[i] = (string)result.GetType().InvokeMember("shift", BindingFlags.InvokeMethod, null, result, null);
+                    }
+
+                    this._resetEvent.Set();
+                    this.worker.RunWorkerAsync();
+                }                
+            }
+            catch (Exception)
+            {
+                
+                throw;
+            }          
+        } 
+
+        #endregion
+
+        #region Background Worker Event
 
         /// <summary>
         /// background worker completed event
@@ -130,6 +199,10 @@ namespace MangaDownloader.Controller
             }
         }
 
+        #endregion
+
+        #region Download Methods
+
         /// <summary>
         /// perform download item
         /// </summary>
@@ -137,10 +210,10 @@ namespace MangaDownloader.Controller
         public void Download(Model.Chapter chapter)
         {
             try
-            {
+            {                
                 this.Chapter = chapter;
-                this._resetEvent.Set();
-                this.worker.RunWorkerAsync();
+
+                this.browser.Navigate(this.Chapter.URL);               
             }
             catch (Exception)
             {                
@@ -156,49 +229,24 @@ namespace MangaDownloader.Controller
         {
             try
             {
-                WebResponse response;
-                Stream stream;
-                HtmlDocument document = new HtmlDocument();
-
-                using (response = HtmlUti.Request(this.Chapter.URL))
+                for (int i = 0; i < this.imagesURL.Length; i++)
                 {
-                    using (stream = response.GetResponseStream())
+                    //wait for start or resume signal
+                    this._resetEvent.WaitOne();
+
+                    //cancel process when cancel signal was sent
+                    if (this.worker.CancellationPending)
                     {
-                        document.Load(stream);
-
-                        List<HtmlNode> imgNodes = document.DocumentNode.Descendants()
-                                                                    .Where(x => x.Name == "div" && x.Attributes.Contains("id")
-                                                                        && x.Attributes["id"].Value == "divImage").FirstOrDefault()
-                                                                    .Descendants()
-                                                                    .Where(x => x.Name == "img").ToList();
-                        HtmlNodeCollection nodes = document.DocumentNode.Descendants()
-                                                                    .Where(x => x.Name == "div" && x.Attributes.Contains("id")
-                                                                        && x.Attributes["id"].Value == "divImage").FirstOrDefault().ChildNodes;
-                        int totalPage = imgNodes.Count;
-                        int currentPage = 0;
-
-                        for (; currentPage < totalPage; currentPage++)
-                        {
-                            //wait for start or resume signal
-                            this._resetEvent.WaitOne();
-
-                            //cancel process when cancel signal was sent
-                            if (this.worker.CancellationPending)
-                            {
-                                e.Cancel = true;
-                                return;
-                            }
-
-                            //do download process
-                            string imgURL = imgNodes[currentPage].Attributes["src"].Value;
-
-                            this.Download(imgURL, currentPage);
-
-                            int percentage = currentPage / totalPage * 100;
-
-                            this.worker.ReportProgress(percentage);
-                        }
+                        e.Cancel = true;
+                        return;
                     }
+
+                    //do download process 
+                    this.Download(this.imagesURL[i], i + 1);
+
+                    int percentage = (int)((float)i / (float)(this.imagesURL.Length - 1) * 100);
+
+                    this.worker.ReportProgress(percentage);
                 }
             }
             catch (Exception)
@@ -219,8 +267,14 @@ namespace MangaDownloader.Controller
                 {
                     using (Stream stream = response.GetResponseStream())
                     {
-                        Image img = Image.FromStream(stream);
-                        img.Save(this.Chapter.SavePath + "\\" + pageNo.ToString() + "." + img.RawFormat.GetFilenameExtension());
+                        Image img = Image.FromStream(stream, false);
+
+                        string saveFilePath = this.Chapter.SavePath + "\\" + pageNo.ToString() + img.RawFormat.GetFilenameExtension().Replace("*", "").Split(';').FirstOrDefault();
+
+                        if (!Directory.Exists(saveFilePath))
+                            Directory.CreateDirectory(Path.GetDirectoryName(saveFilePath));                                      
+
+                        img.Save(saveFilePath);
                     }
                 }
             }
@@ -229,6 +283,10 @@ namespace MangaDownloader.Controller
                 throw;
             }
         }
+
+        #endregion
+
+        #region Handle Download Thread (stop / pause / resume)
 
         /// <summary>
         /// pause download process
@@ -283,5 +341,7 @@ namespace MangaDownloader.Controller
                 throw;
             }
         }
+
+        #endregion
     }
 }

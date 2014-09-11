@@ -1,6 +1,6 @@
 <?xml version="1.0" encoding="utf-8"?>
 <Configuration xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance" xmlns:xsd="http://www.w3.org/2001/XMLSchema">
   <DownloadFolder>E:\Truyen</DownloadFolder>
-  <ConcurrentDownload>1</ConcurrentDownload>
+  <ConcurrentDownload>3</ConcurrentDownload>
   <ConvertPDF>true</ConvertPDF>
 </Configuration>

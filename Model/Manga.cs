@@ -12,6 +12,11 @@ namespace MangaDownloader.Model
     public class Manga
     {
         /// <summary>
+        /// manga name
+        /// </summary>
+        private string mangaName;
+
+        /// <summary>
         /// list of chapters
         /// </summary>
         private List<Chapter> chapters;
@@ -19,7 +24,17 @@ namespace MangaDownloader.Model
         /// <summary>
         /// manga name
         /// </summary>
-        public string Name { get; set; }
+        public string Name 
+        {
+            get
+            {
+                return this.mangaName;
+            }
+            set
+            {
+                this.mangaName = value.Trim('.');
+            }
+        }
 
         /// <summary>
         /// manga url

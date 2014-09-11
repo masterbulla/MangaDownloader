@@ -388,8 +388,9 @@ namespace MangaDownloader
                         this._eventReset.WaitOne();
 
                         DownloadItem item = this.queue.Dequeue();
-                        item.Completed += item_Completed;
-                        item.Start();
+                        item.Completed += item_Completed;    
+                        this.Invoke((MethodInvoker) delegate {item.Start();});
+                        //item.Start();
 
                         this.NoOfDownload += 1;
                     }
@@ -422,20 +423,6 @@ namespace MangaDownloader
             catch (Exception)
             {                
                 throw;
-            }
-        }
-
-        private delegate void SetDGVValueDelegate(BindingList<DownloadItem> items);
-
-        private void SetDGVValue(BindingList<DownloadItem> items)
-        {
-            if (dgvDownload.InvokeRequired)
-            {
-                dgvDownload.Invoke(new SetDGVValueDelegate(SetDGVValue), items);
-            }
-            else
-            {
-                dgvDownload.DataSource = items;
             }
         }
     }

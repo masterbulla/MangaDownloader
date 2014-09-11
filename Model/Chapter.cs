@@ -2,6 +2,7 @@
 using System;
 using System.Collections.Generic;
 using System.ComponentModel;
+using System.IO;
 using System.Linq;
 using System.Text;
 using System.Threading.Tasks;
@@ -74,6 +75,11 @@ namespace MangaDownloader.Model
                 this.Manga = manga;
                 this.Downloader = downloader;
                 this.SavePath = this.Config.DownloadFolder + "\\" + this.Manga.Site.ToString() + "\\" + this.MangaName + "\\" + this.Name;
+
+                foreach (char invalidCharacter in Path.GetInvalidPathChars())
+                {
+                    this.SavePath = this.SavePath.Replace(invalidCharacter.ToString(), "");
+                }
 
                 this.Downloader.ProgressChanged += Downloader_ProgressChanged;
                 this.Downloader.Completed += Downloader_Completed;

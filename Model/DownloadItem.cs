@@ -97,7 +97,7 @@ namespace MangaDownloader.Model
 
                 if (this.PropertyChanged != null)
                 {
-                    //this.PropertyChanged(this, new PropertyChangedEventArgs("State"));
+                    this.PropertyChanged(this, new PropertyChangedEventArgs("State"));
                 }
             }
         }

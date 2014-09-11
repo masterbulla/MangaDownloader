@@ -14,3 +14,13 @@ E:\SVN\MangaDownloader\MangaDownloader\obj\Debug\MangaDownloader.csproj.Generate
 E:\SVN\MangaDownloader\MangaDownloader\obj\Debug\MangaDownloader.exe
 E:\SVN\MangaDownloader\MangaDownloader\obj\Debug\MangaDownloader.pdb
 E:\SVN\MangaDownloader\MangaDownloader\obj\Debug\MangaDownloader.csprojResolveAssemblyReference.cache
+D:\SVN\MangaDownloader\bin\Debug\MangaDownloader.exe.config
+D:\SVN\MangaDownloader\bin\Debug\MangaDownloader.exe
+D:\SVN\MangaDownloader\bin\Debug\MangaDownloader.pdb
+D:\SVN\MangaDownloader\obj\Debug\MangaDownloader.FrmConfig.resources
+D:\SVN\MangaDownloader\obj\Debug\MangaDownloader.FrmDownload.resources
+D:\SVN\MangaDownloader\obj\Debug\MangaDownloader.FrmSelectDownload.resources
+D:\SVN\MangaDownloader\obj\Debug\MangaDownloader.Properties.Resources.resources
+D:\SVN\MangaDownloader\obj\Debug\MangaDownloader.csproj.GenerateResource.Cache
+D:\SVN\MangaDownloader\obj\Debug\MangaDownloader.exe
+D:\SVN\MangaDownloader\obj\Debug\MangaDownloader.pdb
